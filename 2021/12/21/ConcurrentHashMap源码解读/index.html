@@ -18,10 +18,10 @@
 <meta property="og:description" content="ConcurrentHashMap源码解读">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-12-21T07:23:01.000Z">
-<meta property="article:modified_time" content="2022-01-03T01:18:04.313Z">
+<meta property="article:modified_time" content="2022-01-03T01:34:11.364Z">
 <meta property="article:author" content="Cheng">
-<meta property="article:tag" content="源码解析">
 <meta property="article:tag" content="集合">
+<meta property="article:tag" content="源码解析">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="cheng的博客" type="application/atom+xml">
@@ -263,7 +263,7 @@
     
     <h1 id="ConcurrentHashMap源码解读"><a href="#ConcurrentHashMap源码解读" class="headerlink" title="ConcurrentHashMap源码解读"></a><strong>ConcurrentHashMap源码解读</strong></h1><span id="more"></span>
 <h2 id="0-简介"><a href="#0-简介" class="headerlink" title="0.简介"></a>0.简介</h2><p>ConcurrentHashMap为了高并发而设计，相比于HashTable和HashMap有更多优势。HashTable是同步的，在多线程环境下，能保证程序执行的正确性，每次同步执行的时候都要锁住整个结构。HashMap不是同步的，在单线程情况下效率高。</p>
-<p>ConcurrentHashMap锁方式是稍微细粒度的，内部采用分离锁的设计。它默认将Hash表分为16个分段，get，put，remove等常用操作只锁当前需要用到的分段。对于每个Segment，采用final和volatile关键字。</p>
+<p>ConcurrentHashMap锁方式是稍微细粒度的，内部采用分离锁的设计。它默认将Hash表分为16个分段，put，remove等常用操作只锁当前需要用到的分段。对于每个Segment，采用final和volatile关键字。</p>
 <p>concurrenthashmap采用了二次hash的方式，第一次hash将key映射到对应的segment，而第二次hash则是映射到segment的不同桶中。</p>
 <p>原来只能一个线程进入，现在却能同时16个写线程进入，写线程需要锁定，读线程几乎不受限制，并发性是显而易见的。只有size等操作才需要锁定整个表。</p>
 <h2 id="1-概要"><a href="#1-概要" class="headerlink" title="1. 概要"></a>1. 概要</h2><h3 id="1-1-JDK1-7及更早版本"><a href="#1-1-JDK1-7及更早版本" class="headerlink" title="1.1 JDK1.7及更早版本"></a>1.1 JDK1.7及更早版本</h3><p>使用分段锁解决hashmap的并发问题，基于currentLevel划分出多个Segment来对K-V对进行存储，从而避免每次put、remove操作都得锁住整个数组。<br>put、remove会加锁，get和containsKey不会。<br>计算size: 在不加锁的情况下遍历所有Segment读取其count和modCount，这两个属性都是volatile类型的，并进行统计，再遍历一次所有Segment，比较modCount是否有所改变，如有改变则再次尝试两次如上操作。如果执行了三次上述操作仍有问题，则遍历所有Segment，分别进行加锁，然后进行计算，计算完毕后释放所有锁。</p>
@@ -398,11 +398,11 @@ c）如果这个节点的类型已经是树节点的话，直接调用树节点�
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">源码解析</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">集合</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">集合</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">源码解析</a>
         		</li>
       		
 		</ul>
@@ -647,7 +647,7 @@ c）如果这个节点的类型已经是树节点的话，直接调用树节点�
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">java并发</a>
+                <a href="javascript:void(0)" class="js-tag color3">集合</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -655,7 +655,7 @@ c）如果这个节点的类型已经是树节点的话，直接调用树节点�
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">集合</a>
+                <a href="javascript:void(0)" class="js-tag color2">java并发</a>
               </li>
              
               <li class="article-tag-list-item">
